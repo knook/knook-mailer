@@ -1,0 +1,36 @@
+{
+  "name": "knook-mailer",
+  "version": "0.1.0",
+  "description": "A library prodviding all services a mail client could needs.",
+  "main": "index.js",
+  "scripts": {
+    "test-nyan": "make test-nyan",
+    "test-spec": "make test-spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knook/knook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/knook/knook/issues"
+  },
+  "author": {
+    "name": "Alexandre Lagrange-Cetto, Olivier Graziano, Olivier Marin",
+    "email": "",
+    "url": ""
+  },
+  "license": "MIT",
+  "keywords": [
+    "mailer",
+    "node JS",
+    "Knook"
+  ],
+  "dependencies": {
+    "async": "^2.0.0-rc.3",
+    "nodemailer": "^2.3.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  }
+}
