@@ -11,6 +11,7 @@
 module.exports = {
     Accounts: require('./src/Accounts'),
     Email: require('./src/Email'),
+    Init: require('./src/Init'),
     Prefs: require('./src/Prefs'),
     Security: require('./src/Security')
 };

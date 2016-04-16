@@ -9,7 +9,6 @@
 
 'use strict';
 
-
 /* Data object format
  var data = {
      name: null,
@@ -27,13 +26,27 @@
  };
  */
 
+var nodemailer = require('nodemailer');
+var fs = require('fs');
+
 module.exports = {
     /**
      * Add the account described in the data object to the json config file.
      * @param data : object
      */
     addAccount: function (data) {
-        return 1;
+        var configFile = fs.readFileSync(process.env.HOME+'/.knookrc.json');
+        var configContent = JSON.parse(configFile);
+        var name = data['email'];
+        configContent.Accounts[name] = data;
+        var configJSON = JSON.stringify(configContent, null, 4);
+        fs.writeFile(process.env.HOME+'/.knookrc.json', configJSON, (err)=> {
+            if(err){
+                callback(err);
+            } else {
+                callback(true);
+            }
+        });
     },
 
     /**
@@ -47,11 +60,31 @@ module.exports = {
     /**
      * Check the connectivity of the account described in parameter to the SMTP server.
      * @param data
-     * @return res : true if account is connected
-     *               string containing the error else.
+     * @param callback
      */
-    checkSMTP: function (data) {
-        return 1;
+    checkSMTP: function (data, callback) {
+        var smtpConfig = {
+            host: data["smtpServer"],
+            port: data["smtpPort"],
+            secure: data["smtpSSL"], // use SSL
+            auth: {
+                user: data['smtpUsername'],
+                pass: data['smtpPassword']
+            }
+        };
+
+        // create reusable transporter object using the default SMTP transport
+        var transporter = nodemailer.createTransport(smtpConfig);
+
+        transporter.verify(function(error) {
+            if (error) {
+                //console.log(error);
+                callback(error);
+            } else {
+                //console.log('Server is ready to take our messages');
+                callback(true);
+            }
+        });
     },
 
     /**
