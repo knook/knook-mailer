@@ -9,6 +9,7 @@
 'use strict';
 
 var fs = require('fs');
+var sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
     createConfigJSON: function (callback) {
@@ -39,6 +40,25 @@ module.exports = {
                 if (err) {
                     callback(err);
                 } else {
+                    var db = new sqlite3.Database(process.env.HOME + '/.knook.db');
+
+                    db.serialize(function() {
+
+                        var query = "CREATE TABLE if not exists inbox (" +
+                            "AddrFrom TEXT, " +
+                            "AddrTo TEXT, " +
+                            "cc TEXT, " +
+                            "bc TEXT, " +
+                            "content TEXT, " +
+                            "hasAttachment int, " +
+                            "isRead int, " +
+                            "isSnoozed int " +
+                            ")";
+
+                        db.run(query);
+                    });
+
+                    db.close();
                     callback(true);
                 }
             });

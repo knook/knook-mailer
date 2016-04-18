@@ -13,7 +13,10 @@ var should = require('chai').should(),
     Email = index.Email,
     Init = index.Init,
     Prefs = index.Prefs,
-    Security = index.Security;
+    Security = index.Security,
+    fs = require('fs'),
+    sqlite3 = require('sqlite3').verbose(),
+    Promise = require('promise');
 
 var data = {
     name: 'test',
@@ -31,15 +34,17 @@ var data = {
 };
 
 describe('#Init', function () {
-    it('Create config JSON', function () {
-       Init.createConfigJSON(function (err) {
-           err.should.equal(true);
-       });
+
+    before(function () {
+        // executes once, before all tests from this block
+        // remove .knook.db and .knookrc.json
+        fs.unlink(process.env.HOME + '/.knook.db');
+        fs.unlink(process.env.HOME + '/.knookrc.json');
     });
-    
-    it('Config JSON already exist', function () {
+
+    it('Create config JSON', function () {
         Init.createConfigJSON(function (err) {
-            err.should.equal('File already exist.');
+            err.should.equal(true);
         });
     });
 
@@ -48,13 +53,8 @@ describe('#Init', function () {
             err.should.equal(true);
         });
     });
-
-    it('Database file already exist', function () {
-        Init.createMailDB(function (err) {
-            err.should.equal('File already exist.');
-        });
-    });
 });
+
 
 describe('#Account', function () {
 
