@@ -6,6 +6,7 @@
  * version 0.1.0
  */
 
+'use strict'
 
 var should = require('chai').should(),
     index = require('../index'),
@@ -15,8 +16,13 @@ var should = require('chai').should(),
     Prefs = index.Prefs,
     Security = index.Security,
     fs = require('fs'),
-    sqlite3 = require('sqlite3').verbose(),
-    Promise = require('promise');
+    sqlite3 = require('sqlite3').verbose();
+
+var chai = require("chai");
+var sinon = require("sinon");
+var sinonChai = require("sinon-chai");
+chai.should();
+chai.use(sinonChai);
 
 var data = {
     name: 'test',
@@ -36,22 +42,24 @@ var data = {
 describe('#Init', function () {
 
     before(function () {
-        // executes once, before all tests from this block
-        // remove .knook.db and .knookrc.json
-        fs.unlink(process.env.HOME + '/.knook.db');
-        fs.unlink(process.env.HOME + '/.knookrc.json');
+        if(fs.existsSync(process.env.HOME + '/.knookrc.json')){
+            fs.unlink(process.env.HOME + '/.knookrc.json');
+        }
+        if(fs.existsSync(process.env.HOME + '/.knook.db')){
+            fs.unlink(process.env.HOME + '/.knook.db');
+        }
     });
 
     it('Create config JSON', function () {
-        Init.createConfigJSON(function (err) {
-            err.should.equal(true);
-        });
+        var cb = sinon.spy();
+        Init.createConfigJSON(cb);
+        cb.should.have.been.calledWith(true);
     });
 
     it('Create database file', function () {
-        Init.createMailDB(function (err) {
-            err.should.equal(true);
-        });
+        var cb = sinon.spy();
+        Init.createMailDB(cb);
+        cb.should.have.been.calledWith(true);
     });
 });
 

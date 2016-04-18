@@ -22,48 +22,49 @@ module.exports = {
 
             var configJSON = JSON.stringify(config, null, 4);
 
-            fs.writeFile(process.env.HOME + '/.knookrc.json', configJSON, (err) => {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(true);
-                }
-            });
+            try{
+               fs.writeFileSync(process.env.HOME + '/.knookrc.json', configJSON);
+                callback(true)
+            } catch (ex) {
+                callback(ex);
+            }
+
         } else {
-            callback("File already exist.");
+            callback(new Error("File already exist."));
         }
     },
 
     createMailDB: function (callback) {
         if (!fs.existsSync(process.env.HOME + '/.knook.db')) {
-            fs.writeFile(process.env.HOME + '/.knook.db', '', (err) => {
-                if (err) {
-                    callback(err);
-                } else {
-                    var db = new sqlite3.Database(process.env.HOME + '/.knook.db');
 
-                    db.serialize(function() {
+            try{
+                fs.writeFileSync(process.env.HOME + '/.knook.db');
+                var db = new sqlite3.Database(process.env.HOME + '/.knook.db');
 
-                        var query = "CREATE TABLE if not exists inbox (" +
-                            "AddrFrom TEXT, " +
-                            "AddrTo TEXT, " +
-                            "cc TEXT, " +
-                            "bc TEXT, " +
-                            "content TEXT, " +
-                            "hasAttachment int, " +
-                            "isRead int, " +
-                            "isSnoozed int " +
-                            ")";
+                db.serialize(function() {
 
-                        db.run(query);
-                    });
+                    var query = "CREATE TABLE if not exists inbox (" +
+                        "AddrFrom TEXT, " +
+                        "AddrTo TEXT, " +
+                        "cc TEXT, " +
+                        "bc TEXT, " +
+                        "content TEXT, " +
+                        "hasAttachment int, " +
+                        "isRead int, " +
+                        "isSnoozed int " +
+                        ")";
 
-                    db.close();
-                    callback(true);
-                }
-            });
+                    db.run(query);
+                });
+
+                db.close();
+                callback(true);
+            } catch (ex) {
+                callback(ex)
+            }
+            
         } else {
-            callback("File already exist.");
+            callback(new Error("File already exist."));
         }
     }
 };
