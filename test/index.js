@@ -67,17 +67,17 @@ describe('#Init', function () {
 describe('#Account', function () {
 
     it('Add account', function () {
-        Accounts.addAccount(data, function (res) {
-            res.should.equal(true);
-        });
+        var cb = sinon.spy();
+        Accounts.addAccount(data, cb);
+        cb.should.have.been.calledWith(true);
     });
 
     it('Add account (bis)', function () {
         var dataBis = data;
+        var cb = sinon.spy();
         dataBis['email'] = 'lol@test.com';
-        Accounts.addAccount(dataBis, function (res) {
-            res.should.equal(true);
-        });
+        Accounts.addAccount(dataBis, cb);
+        cb.should.have.been.calledWith(true);
     });
 
     it('Del account', function () {
@@ -85,9 +85,10 @@ describe('#Account', function () {
     });
 
     it('Check SMTP', function () {
-        Accounts.checkSMTP(data, function (res) {
-            res.should.equal(true);
-        });
+        var cb = sinon.spy();
+        Accounts.checkSMTP(data, cb);
+        console.log(cb.args);
+        cb.should.have.been.calledWith(true);
     });
 
     it('Check IMAP', function () {

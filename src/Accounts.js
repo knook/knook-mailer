@@ -34,19 +34,19 @@ module.exports = {
      * Add the account described in the data object to the json config file.
      * @param data : object
      */
-    addAccount: function (data) {
+    addAccount: function (data, callback) {
         var configFile = fs.readFileSync(process.env.HOME+'/.knookrc.json');
         var configContent = JSON.parse(configFile);
         var name = data['email'];
         configContent.Accounts[name] = data;
         var configJSON = JSON.stringify(configContent, null, 4);
-        fs.writeFile(process.env.HOME+'/.knookrc.json', configJSON, (err)=> {
-            if(err){
-                callback(err);
-            } else {
-                callback(true);
-            }
-        });
+
+        try {
+            fs.writeFileSync(process.env.HOME+'/.knookrc.json', configJSON);
+            callback(true)
+        } catch (ex) {
+            callback(ex)
+        }
     },
 
     /**
@@ -78,10 +78,10 @@ module.exports = {
 
         transporter.verify(function(error) {
             if (error) {
-                //console.log(error);
+                console.log(error);
                 callback(error);
             } else {
-                //console.log('Server is ready to take our messages');
+                console.log('Server is ready to take our messages');
                 callback(true);
             }
         });
