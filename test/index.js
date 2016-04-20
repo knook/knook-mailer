@@ -8,7 +8,8 @@
 
 'use strict'
 
-var should = require('chai').should(),
+var should = require('chai').should,
+    expect = require('chai').expect,
     index = require('../index'),
     Accounts = index.Accounts,
     Email = index.Email,
@@ -51,34 +52,38 @@ describe('#Init', function () {
         }
     });
 
-    it('Create config JSON', function () {
+    it('Create config JSON', function (done) {
         var cb = sinon.spy();
         Init.createConfigJSON(cb);
-        cb.should.have.been.calledWith(true);
+        expect(cb.should.have.been.calledWith(true));
+        done();
     });
 
-    it('Create database file', function () {
+    it('Create database file', function (done) {
         var cb = sinon.spy();
         Init.createMailDB(cb);
-        cb.should.have.been.calledWith(true);
+        expect(cb.should.have.been.calledWith(true));
+        done();
     });
 });
 
 
 describe('#Account', function () {
 
-    it('Add account', function () {
+    it('Add account', function (done) {
         var cb = sinon.spy();
         Accounts.addAccount(data, cb);
-        cb.should.have.been.calledWith(true);
+        expect(cb.should.have.been.calledWith(true));
+        done();
     });
 
-    it('Add account (bis)', function () {
+    it('Add account (bis)', function (done) {
         var dataBis = data;
         var cb = sinon.spy();
         dataBis['email'] = 'lol@test.com';
         Accounts.addAccount(dataBis, cb);
-        cb.should.have.been.calledWith(true);
+        expect(cb.should.have.been.calledWith(true));
+        done();
     });
 
     it('Del account', function () {
@@ -86,11 +91,11 @@ describe('#Account', function () {
     });
 
     it('Check SMTP', function (done) {
-        var cb = sinon.spy();
-        Accounts.checkSMTP(data, cb);
-        console.log("Check SMTP callback called with args [" + cb.args + "]");
-        cb.should.have.been.calledWith(true);
-        done();
+        var callback = sinon.spy(function(){
+            expect(callback.called);
+            done();
+        });
+        Accounts.checkSMTP(data, callback);
     });
 
     it('Check IMAP', function () {
