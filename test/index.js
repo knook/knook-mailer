@@ -21,6 +21,8 @@ var should = require('chai').should(),
 var chai = require("chai");
 var sinon = require("sinon");
 var sinonChai = require("sinon-chai");
+var Promise = require('promises');
+
 chai.should();
 chai.use(sinonChai);
 
@@ -84,11 +86,12 @@ describe('#Account', function () {
         Accounts.delAccount('accountName').should.equal(1);
     });
 
-    it('Check SMTP', function () {
+    it('Check SMTP', function (done) {
         var cb = sinon.spy();
         Accounts.checkSMTP(data, cb);
-        console.log(cb.args);
+        console.log("Check SMTP callback called with args [" + cb.args + "]");
         cb.should.have.been.calledWith(true);
+        done();
     });
 
     it('Check IMAP', function () {

@@ -28,6 +28,8 @@
 
 var nodemailer = require('nodemailer');
 var fs = require('fs');
+var Promise = require('promises');
+var async = require('async');
 
 module.exports = {
     /**
@@ -76,14 +78,23 @@ module.exports = {
         // create reusable transporter object using the default SMTP transport
         var transporter = nodemailer.createTransport(smtpConfig);
 
-        transporter.verify(function(error) {
-            if (error) {
-                console.log(error);
-                callback(error);
-            } else {
-                console.log('Server is ready to take our messages');
-                callback(true);
+        async.series([
+            function (callback) {
+                transporter.verify(function(error) {
+                    console.log("I'm in");
+                    if (error) {
+                        console.log(error);
+                        callback(error);
+                    } else {
+                        console.log('Server is ready to take our messages');
+                        callback(true);
+                    }
+                });
             }
+        ], function (res) {
+            console.log("In Final callback");
+            console.log(res);
+            callback(res);
         });
     },
 
