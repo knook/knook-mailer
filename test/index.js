@@ -21,7 +21,6 @@ var should = require('chai').should(),
 var chai = require("chai");
 var sinon = require("sinon");
 var sinonChai = require("sinon-chai");
-var Promise = require('promises');
 
 chai.should();
 chai.use(sinonChai);

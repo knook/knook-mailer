@@ -28,7 +28,6 @@
 
 var nodemailer = require('nodemailer');
 var fs = require('fs');
-var Promise = require('promises');
 var async = require('async');
 
 module.exports = {
