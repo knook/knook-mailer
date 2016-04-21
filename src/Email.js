@@ -8,6 +8,7 @@
 
 'use strict';
 
+var sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
     receiveAll: function () {
@@ -26,8 +27,16 @@ module.exports = {
         return 1;
     },
 
-    store: function (email) {
-        return 1;
+    store: function (email, table, callback) {
+        var db = new sqlite3.Database(process.env.HOME + '/.knook.db');
+
+        db.serialize(function() {
+            var stmt = db.prepare("INSERT INTO " + table + " (AddrFrom, AddrTo, cc, bc, content) VALUES (?, ?, ?, ?, ?)");
+            stmt.run(email.AddrFrom, email.AddrTo, email.AddrCc, email.AddrBc, email.Content);
+            stmt.finalize(function () {
+                callback();
+            });
+        });
     },
 
     storeAttachment: function (file) {

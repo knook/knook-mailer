@@ -22,6 +22,7 @@ var should = require('chai').should,
 var chai = require("chai");
 var sinon = require("sinon");
 var sinonChai = require("sinon-chai");
+var Promise = require('promises');
 
 chai.should();
 chai.use(sinonChai);
@@ -123,7 +124,7 @@ describe('#Email', function () {
         Email.sendFor("accountName").should.equal(1);
     });
 
-    it("store", function () {
+    it("store", function (done) {
         var email = {
             AddrTo: "to@example.com",
             AddrFrom: "from@example.com",
@@ -131,8 +132,18 @@ describe('#Email', function () {
             AddrCc: "cc@example.com",
             Content: "This is the content of this email."
         };
+        var table = 'inbox';
+        var callback = sinon.spy(function(){
+            var db = new sqlite3.Database(process.env.HOME + '/.knook.db');
+            db.serialize(function() {
+                db.all("SELECT * FROM inbox WHERE AddrTo = '"+email.AddrTo+"' AND AddrFrom = '"+email.AddrFrom+"'", function (err, row) {
+                    expect(row).to.not.be.empty;
+                    done();
+                });
+            });
+        });
 
-        Email.store("Email").should.equal(1);
+        Email.store(email, table, callback);
     });
 
     it("Store Attachment", function () {

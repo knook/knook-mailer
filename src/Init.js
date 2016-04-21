@@ -76,6 +76,16 @@ module.exports = {
                         "date TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                         ")";
 
+                    var queryOutbox = "CREATE TABLE if not exists outbox (" +
+                        "AddrFrom TEXT, " +
+                        "AddrTo TEXT, " +
+                        "cc TEXT, " +
+                        "bc TEXT, " +
+                        "content TEXT, " +
+                        "hasAttachment int, " +
+                        "date TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                        ")";
+
                     var queryTrash = "CREATE TABLE if not exists trash (" +
                         "AddrFrom TEXT, " +
                         "AddrTo TEXT, " +
@@ -100,6 +110,11 @@ module.exports = {
                         },
                         function (callback) {
                             db.run(querySent, function (err) {
+                                callback(null, err);
+                            });
+                        },
+                        function (callback) {
+                            db.run(queryOutbox, function (err) {
                                 callback(null, err);
                             });
                         },
