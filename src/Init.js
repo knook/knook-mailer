@@ -10,6 +10,7 @@
 
 var fs = require('fs');
 var sqlite3 = require('sqlite3').verbose();
+var async = require('async');
 
 module.exports = {
     createConfigJSON: function (callback) {
@@ -22,8 +23,8 @@ module.exports = {
 
             var configJSON = JSON.stringify(config, null, 4);
 
-            try{
-               fs.writeFileSync(process.env.HOME + '/.knookrc.json', configJSON);
+            try {
+                fs.writeFileSync(process.env.HOME + '/.knookrc.json', configJSON);
                 callback(true)
             } catch (ex) {
                 callback(ex);
@@ -37,32 +38,85 @@ module.exports = {
     createMailDB: function (callback) {
         if (!fs.existsSync(process.env.HOME + '/.knook.db')) {
 
-            try{
-                fs.writeFileSync(process.env.HOME + '/.knook.db');
+            try {
+                fs.writeFileSync(process.env.HOME + '/.knook.db', '');
                 var db = new sqlite3.Database(process.env.HOME + '/.knook.db');
 
-                db.serialize(function() {
+                db.serialize(function () {
 
-                    var query = "CREATE TABLE if not exists inbox (" +
+                    var queryInbox = "CREATE TABLE if not exists inbox (" +
+                        "AddrFrom TEXT, " +
+                        "AddrTo TEXT, " +
+                        "cc TEXT, " +
+                        "bc TEXT, " +
+                        "content TEXT, " +
+                        "date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "hasAttachment int, " +
+                        "isRead int, " +
+                        "isSnoozed int " +
+                        ")";
+
+                    var queryDraft = "CREATE TABLE if not exists draft (" +
                         "AddrFrom TEXT, " +
                         "AddrTo TEXT, " +
                         "cc TEXT, " +
                         "bc TEXT, " +
                         "content TEXT, " +
                         "hasAttachment int, " +
-                        "isRead int, " +
-                        "isSnoozed int " +
+                        "date TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                         ")";
 
-                    db.run(query);
-                });
+                    var querySent = "CREATE TABLE if not exists sent (" +
+                        "AddrFrom TEXT, " +
+                        "AddrTo TEXT, " +
+                        "cc TEXT, " +
+                        "bc TEXT, " +
+                        "content TEXT, " +
+                        "hasAttachment int, " +
+                        "date TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                        ")";
 
-                db.close();
-                callback(true);
+                    var queryTrash = "CREATE TABLE if not exists trash (" +
+                        "AddrFrom TEXT, " +
+                        "AddrTo TEXT, " +
+                        "cc TEXT, " +
+                        "bc TEXT, " +
+                        "content TEXT, " +
+                        "hasAttachment int, " +
+                        "inDate TIMESTAMP, " +
+                        "toTrashDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                        ")";
+
+                    async.series([
+                        function (callback) {
+                            db.run(queryInbox, function (err) {
+                                callback(null, err);
+                            });
+                        },
+                        function (callback) {
+                            db.run(queryDraft, function (err) {
+                                callback(null, err);
+                            });
+                        },
+                        function (callback) {
+                            db.run(querySent, function (err) {
+                                callback(null, err);
+                            });
+                        },
+                        function (callback) {
+                            db.run(queryTrash, function (err) {
+                                callback(null, err);
+                            });
+                        }
+                    ], function (err, res) {
+                        callback(res);
+                        db.close();
+                    });
+                });
             } catch (ex) {
                 callback(ex)
             }
-            
+
         } else {
             callback(new Error("File already exist."));
         }

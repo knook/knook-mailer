@@ -53,17 +53,19 @@ describe('#Init', function () {
     });
 
     it('Create config JSON', function (done) {
-        var cb = sinon.spy();
-        Init.createConfigJSON(cb);
-        expect(cb.should.have.been.calledWith(true));
-        done();
+        var callback = sinon.spy(function(){
+            expect(callback.should.be.calledWith(true));
+            done();
+        });
+        Init.createConfigJSON(callback);
     });
 
     it('Create database file', function (done) {
-        var cb = sinon.spy();
-        Init.createMailDB(cb);
-        expect(cb.should.have.been.calledWith(true));
-        done();
+        var callback = sinon.spy(function(){
+            expect(callback.should.be.calledWith([null, null, null, null]));
+            done();
+        });
+        Init.createMailDB(callback);
     });
 });
 
@@ -91,6 +93,7 @@ describe('#Account', function () {
     });
 
     it('Check SMTP', function (done) {
+        this.timeout(5*1000);
         var callback = sinon.spy(function(){
             expect(callback.called);
             done();
@@ -121,6 +124,14 @@ describe('#Email', function () {
     });
 
     it("store", function () {
+        var email = {
+            AddrTo: "to@example.com",
+            AddrFrom: "from@example.com",
+            AddrBc: "bc@example.com",
+            AddrCc: "cc@example.com",
+            Content: "This is the content of this email."
+        };
+
         Email.store("Email").should.equal(1);
     });
 
